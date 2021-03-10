@@ -8,39 +8,36 @@ import { selectCartHidden } from '../../redux/cart/cart.selectors';
 import { selectCurrentUser } from '../../redux/user/user.selectors';
 import { ReactComponent as Logo } from '../../assets/crown.svg';
 
-import { 
-  HeaderContainer, 
-  LogoContainer, 
-  OptionsContainer, 
-  OptionDiv } from './header.styles';
+import './header.styles.scss';
 
 const Header = () => {
   const currentUser = useSelector(selectCurrentUser);
   const hidden = useSelector(selectCartHidden);
   return (
-    <HeaderContainer>
-      <LogoContainer to='/'>
+    <div className='header'>
+      <Link className='logo-container' to='/'>
         <Logo className='logo' />
-      </LogoContainer>
-      <OptionsContainer>
-        <OptionDiv as={Link} to='/shop'>
+      </Link>
+      <div className='options'>
+        <Link className='option' to='/shop'>
           SHOP
-        </OptionDiv>
-        <OptionDiv as={Link} to='/shop'>
+      </Link>
+        <Link className='option' to='/shop'>
           CONTACT
-        </OptionDiv>
-        {
-          currentUser ? (
-            <OptionDiv onClick={() => auth.signOut()}>SIGN OUT</OptionDiv>
-          ) : (
-              <OptionDiv as={Link} to='/signin'>SIGN IN</OptionDiv>
-            )}
+      </Link>
+        {currentUser ? (
+          <div className='option' onClick={() => auth.signOut()}>
+            SIGN OUT
+          </div>
+        ) : (
+          <Link className='option' to='/signin'>
+            SIGN IN
+          </Link>
+        )}
         <CartIcon />
-      </OptionsContainer>
-      {
-        hidden ? null : <CartDropdown />
-      }
-    </HeaderContainer>
+      </div>
+      {hidden ? null : <CartDropdown />}
+    </div>
   );
 }
 

@@ -7,10 +7,12 @@ export const selectShopCollections = state => {
 
 export const selectCollection = collectionUrlParam => state => {
   const collections = selectShopCollections(state);
-  return collections[collectionUrlParam];
+  return collections ? 
+    collections[collectionUrlParam] : null;
 }
 
 export const selectShopCollectionForPreview = state => {
   const collections = selectShopCollections(state);
-  return Object.keys(collections).map(key => collections[key]);
+  return collections ?
+    Object.keys(collections).map(key => collections[key]) : [];
 }
