@@ -21,3 +21,8 @@ export const selectIsCollectionFetching = state => {
   const shop = selectShop(state);
   return shop.isFetching;
 }
+
+export const selectIsCollectionLoaded = state =>  {
+  const shop = selectShop(state);
+  return !!shop.collections;
+}
