@@ -16,3 +16,8 @@ export const selectShopCollectionForPreview = state => {
   return collections ?
     Object.keys(collections).map(key => collections[key]) : [];
 }
+
+export const selectIsCollectionFetching = state => {
+  const shop = selectShop(state);
+  return shop.isFetching;
+}
