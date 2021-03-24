@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { Switch, Route, Redirect } from 'react-router-dom';
 
 import HomePage from './pages/homepage/homepage.components';
@@ -6,10 +7,16 @@ import ShopPage from './pages/shop/shop.component';
 import CheckoutPage from './pages/checkout/checkout.component';
 import SignInAndSignUpPage from './pages/sign-in-and-sign-up/sign-in-and-sign-up.component';
 import Header from './components/header/header.component';
+import { checkUserSession } from './redux/user/user.actions';
 
 import './App.css'
 
 class App extends React.Component {
+  componentDidMount() {
+    const { checkUserSession } = this.props;
+    checkUserSession();
+  }
+
   render() {
     return (
       <div>
@@ -28,4 +35,8 @@ class App extends React.Component {
   }
 }
 
-export default App;
+const mapStateToDispatch = dispatch => ({
+  checkUserSession: () => dispatch(checkUserSession())
+});
+
+export default connect(null, mapStateToDispatch)(App);

@@ -3,18 +3,23 @@ import { takeLatest, put, all, call } from 'redux-saga/effects';
 import {
   GOOGLE_SIGN_IN_START,
   EMAIL_SIGN_IN_START,
-  CREATE_USER_START
+  CREATE_USER_START,
+  CHECK_USER_SESSION,
+  SIGN_OUT_START
 } from './user.types';
 
 import {
   signInFailure,
   signInSuccess,
+  signOutFailure,
+  signOutSuccess,
 } from './user.actions';
 
 import {
   auth,
   googleProvider,
-  createUserProfileDocument
+  createUserProfileDocument,
+  getCurrentUser
 } from '../../firebase/firebase.utils';
 
 export function* getSnapshotFromUserAuth(userAuth) {
@@ -54,6 +59,29 @@ export function* createUserWithEmail({ payload: { email, password, displayName }
   }
 }
 
+export function* isUserAuthenticated() {
+  try {
+    const userAuth = yield getCurrentUser();
+    
+    if (!userAuth) return;
+
+    yield getSnapshotFromUserAuth(userAuth);
+  }
+  catch (error) {
+    yield put(signInFailure(error));
+  }
+}
+
+export function* signOut() {
+  try {
+    yield auth.signOut();
+    yield put(signOutSuccess());
+  }
+  catch (error) {
+    yield put(signOutFailure(error.message));
+  }
+}
+
 export function* onGoogleSignInStart() {
   yield takeLatest(GOOGLE_SIGN_IN_START, signInWithGoogle);
 }
@@ -66,10 +94,20 @@ export function* onCreateUserWithEmailStart() {
   yield takeLatest(CREATE_USER_START, createUserWithEmail);
 }
 
+export function* onCheckUserSession() {
+  yield takeLatest(CHECK_USER_SESSION, isUserAuthenticated)
+}
+
+export function* onSignOutStart() {
+  yield takeLatest(SIGN_OUT_START, signOut)
+}
+
 export function* userSagas() {
   yield all([
     call(onGoogleSignInStart),
     call(onEmailSignInStart),
-    call(onCreateUserWithEmailStart)
+    call(onCreateUserWithEmailStart),
+    call(onCheckUserSession),
+    call(onSignOutStart)
   ]);
 }
