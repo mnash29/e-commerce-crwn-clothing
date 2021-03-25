@@ -1,4 +1,5 @@
 import {
+  CREATE_USER_FAILURE,
   SIGN_IN_FAILURE,
   SIGN_IN_SUCCESS,
   SIGN_OUT_FAILURE,
@@ -26,6 +27,7 @@ const userReducer = (state = INITIAL_STATE, action) => {
       };
     case SIGN_OUT_FAILURE:
     case SIGN_IN_FAILURE:
+    case CREATE_USER_FAILURE:
       return {
         ...state,
         error: action.payload

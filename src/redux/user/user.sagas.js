@@ -4,6 +4,7 @@ import {
   GOOGLE_SIGN_IN_START,
   EMAIL_SIGN_IN_START,
   CREATE_USER_START,
+  CREATE_USER_SUCCESS,
   CHECK_USER_SESSION,
   SIGN_OUT_START
 } from './user.types';
@@ -13,6 +14,8 @@ import {
   signInSuccess,
   signOutFailure,
   signOutSuccess,
+  createUserWithEmailFailure,
+  createUserWithEmailSuccess
 } from './user.actions';
 
 import {
@@ -22,8 +25,8 @@ import {
   getCurrentUser
 } from '../../firebase/firebase.utils';
 
-export function* getSnapshotFromUserAuth(userAuth) {
-  const userRef = yield call(createUserProfileDocument, userAuth);
+export function* getSnapshotFromUserAuth(userAuth, additionalData) {
+  const userRef = yield call(createUserProfileDocument, userAuth, additionalData);
   const userSnapshot = yield userRef.get();
   yield put(signInSuccess({ id: userSnapshot.id, ...userSnapshot.data() }));
 }
@@ -50,25 +53,28 @@ export function* signInWithEmail({ payload: { email, password } }) {
 
 export function* createUserWithEmail({ payload: { email, password, displayName } }) {
   try {
-    const { user } = auth.createUserWithEmailAndPassword(email, password);
-    console.log(user);
-    yield createUserProfileDocument(user, { displayName });
+    const { user } = yield auth.createUserWithEmailAndPassword(email, password);
+    yield put(createUserWithEmailSuccess({ user, additionalData: { displayName } }));
   }
   catch (error) {
-    yield put(signInFailure(error.message));
+    yield put(createUserWithEmailFailure(error.message));
   }
+}
+
+export function* signInAfterCreateUserWithEmail({ payload: { user, additionalData }}) {
+  yield getSnapshotFromUserAuth(user, additionalData);
 }
 
 export function* isUserAuthenticated() {
   try {
     const userAuth = yield getCurrentUser();
-    
+
     if (!userAuth) return;
 
     yield getSnapshotFromUserAuth(userAuth);
   }
   catch (error) {
-    yield put(signInFailure(error));
+    yield put(signInFailure(error.message));
   }
 }
 
@@ -90,10 +96,6 @@ export function* onEmailSignInStart() {
   yield takeLatest(EMAIL_SIGN_IN_START, signInWithEmail);
 }
 
-export function* onCreateUserWithEmailStart() {
-  yield takeLatest(CREATE_USER_START, createUserWithEmail);
-}
-
 export function* onCheckUserSession() {
   yield takeLatest(CHECK_USER_SESSION, isUserAuthenticated)
 }
@@ -102,12 +104,21 @@ export function* onSignOutStart() {
   yield takeLatest(SIGN_OUT_START, signOut)
 }
 
+export function* onCreateUserWithEmailStart() {
+  yield takeLatest(CREATE_USER_START, createUserWithEmail);
+}
+
+export function* onCreateUserWithEmailSuccess() {
+  yield takeLatest(CREATE_USER_SUCCESS, signInAfterCreateUserWithEmail);
+}
+
 export function* userSagas() {
   yield all([
     call(onGoogleSignInStart),
     call(onEmailSignInStart),
-    call(onCreateUserWithEmailStart),
     call(onCheckUserSession),
-    call(onSignOutStart)
+    call(onSignOutStart),
+    call(onCreateUserWithEmailStart),
+    call(onCreateUserWithEmailSuccess)
   ]);
 }

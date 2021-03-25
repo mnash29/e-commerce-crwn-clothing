@@ -32,21 +32,7 @@ class SignUp extends React.Component {
       return;
     }
 
-    createUserWithEmailStart(email, password, displayName);
-    // try {
-    //   const { user } = await auth.createUserWithEmailAndPassword(email, password);
-
-    //   await createUserProfileDocument(user, { displayName });
-
-    //   this.setState({
-    //     displayName: "",
-    //     email: "",
-    //     password: "",
-    //     confirmPassword: "",
-    //   });
-    // } catch (error) {
-    //   console.error(error);
-    // }
+    createUserWithEmailStart({ email, password, displayName });
   }
 
 
@@ -56,7 +42,7 @@ class SignUp extends React.Component {
     this.setState({ [name]: value });
   }
 
-  
+
   render() {
     const { displayName, email, password, confirmPassword } = this.state;
     return (
@@ -103,8 +89,8 @@ class SignUp extends React.Component {
   }
 }
 
-const mapStateToDispatch = dispatch => ({
-  createUserWithEmailStart: (email, password, displayName) => dispatch(createUserWithEmailStart({ email, password, displayName }))
+const mapDispatchToProps = dispatch => ({
+  createUserWithEmailStart: emailPasswordDisplayName => dispatch(createUserWithEmailStart(emailPasswordDisplayName))
 });
 
-export default connect(null, mapStateToDispatch)(SignUp)
+export default connect(null, mapDispatchToProps)(SignUp)

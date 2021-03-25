@@ -4,6 +4,8 @@ import {
   GOOGLE_SIGN_IN_START,
   EMAIL_SIGN_IN_START,
   CREATE_USER_START,
+  CREATE_USER_SUCCESS,
+  CREATE_USER_FAILURE,
   CHECK_USER_SESSION,
   SIGN_OUT_FAILURE,
   SIGN_OUT_START,
@@ -29,11 +31,6 @@ export const signInFailure = error => ({
   payload: error
 });
 
-export const createUserWithEmailStart = emailPasswordDisplayName => ({
-  type: CREATE_USER_START,
-  payload: emailPasswordDisplayName
-});
-
 export const checkUserSession = () => ({
   type: CHECK_USER_SESSION
 });
@@ -46,7 +43,22 @@ export const signOutSuccess = () => ({
   type: SIGN_OUT_SUCCESS
 });
 
-export const signOutFailure = (error) => ({
+export const signOutFailure = error => ({
   type: SIGN_OUT_FAILURE,
+  payload: error
+});
+
+export const createUserWithEmailStart = emailPasswordDisplayName => ({
+  type: CREATE_USER_START,
+  payload: emailPasswordDisplayName
+});
+
+export const createUserWithEmailSuccess = ({ user, additionalData }) => ({
+  type: CREATE_USER_SUCCESS,
+  payload: { user, additionalData }
+});
+
+export const createUserWithEmailFailure = error => ({
+  type: CREATE_USER_FAILURE,
   payload: error
 });
