@@ -19,7 +19,8 @@
     "compression": "1.7.4",
     "dotenv": "^8.2.0",
     "express": "^4.16.4",
-    "stripe": "6.28.0"
+    "stripe": "6.28.0",
+    "yargs-parser": "^13.1.2"
   },
   "devDependencies": {
     "concurrently": "^4.0.1",
